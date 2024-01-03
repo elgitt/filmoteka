@@ -10,8 +10,7 @@ import java.time.LocalDate;
 @Table(name = "episodes")
 public class Episode {
     @Id
-    @Column(name = "episodeid", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "episode_id", nullable = false)
     private Integer id;
 
     @Column(name = "episode_number")
@@ -26,8 +25,8 @@ public class Episode {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "seasons_seasonid", nullable = false)
-    private Season seasonsSeasonid;
+    @JoinColumn(name = "seasons_season_id", nullable = false)
+    private Season seasonsSeason;
 
     public Integer getId() {
         return id;
@@ -61,12 +60,12 @@ public class Episode {
         this.releaseDate = releaseDate;
     }
 
-    public Season getSeasonsSeasonid() {
-        return seasonsSeasonid;
+    public Season getSeasonsSeason() {
+        return seasonsSeason;
     }
 
-    public void setSeasonsSeasonid(Season seasonsSeasonid) {
-        this.seasonsSeasonid = seasonsSeasonid;
+    public void setSeasonsSeason(Season seasonsSeason) {
+        this.seasonsSeason = seasonsSeason;
     }
 
 }

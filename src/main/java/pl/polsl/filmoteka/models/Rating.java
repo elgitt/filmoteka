@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "ratings")
 public class Rating {
     @Id
-    @Column(name = "ratingid", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "rating_id", nullable = false)
     private Integer id;
 
     @Column(name = "rating")
@@ -18,19 +18,16 @@ public class Rating {
     private Character ismovie;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "users_userId", nullable = false)
-    private User usersUser;
+    @Column(name = "users_userid", nullable = false)
+    private Integer usersUserid;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "movies_movieid", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movies_movieid")
     private Movie moviesMovieid;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "tvseries_tvseriesid", nullable = false)
-    private Tvseries tvseriesTvseriesid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "series_series_id")
+    private Series seriesSeries;
 
     public Integer getId() {
         return id;
@@ -56,12 +53,12 @@ public class Rating {
         this.ismovie = ismovie;
     }
 
-    public User getUsersUser() {
-        return usersUser;
+    public Integer getUsersUserid() {
+        return usersUserid;
     }
 
-    public void setUsersUser(User usersUser) {
-        this.usersUser = usersUser;
+    public void setUsersUserid(Integer usersUserid) {
+        this.usersUserid = usersUserid;
     }
 
     public Movie getMoviesMovieid() {
@@ -72,12 +69,12 @@ public class Rating {
         this.moviesMovieid = moviesMovieid;
     }
 
-    public Tvseries getTvseriesTvseriesid() {
-        return tvseriesTvseriesid;
+    public Series getSeriesSeries() {
+        return seriesSeries;
     }
 
-    public void setTvseriesTvseriesid(Tvseries tvseriesTvseriesid) {
-        this.tvseriesTvseriesid = tvseriesTvseriesid;
+    public void setSeriesSeries(Series seriesSeries) {
+        this.seriesSeries = seriesSeries;
     }
 
 }

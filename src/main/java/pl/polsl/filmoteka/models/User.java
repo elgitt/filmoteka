@@ -1,19 +1,18 @@
 package pl.polsl.filmoteka.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
-    @Column(name = "userid", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", nullable = false)
     private Integer id;
 
     @Size(max = 60)
@@ -29,25 +28,20 @@ public class User {
     private String username;
 
     @Size(max = 60)
-    @Column(name = "email", length = 60)
-    private String email;
-
-    @Size(max = 60)
     @Column(name = "password", length = 60)
     private String password;
 
-    @OneToMany(mappedBy = "usersUser")
-    private Set<Rating> ratings = new LinkedHashSet<>();
+    @Size(max = 10)
+    @NotNull
+    @Column(name = "role", nullable = false, length = 10)
+    private String role;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "users_userid"),
-            inverseJoinColumns = @JoinColumn(name = "roles_roleid")
-    )
-    private List<Role> roles = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "user_genre_preferences",
+            joinColumns = @JoinColumn(name = "users_user_id"))
+    private Set<Genre> genres = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "usersUser")
+    @OneToMany(mappedBy = "usersUserid")
     private Set<Watchlist> watchlists = new LinkedHashSet<>();
 
     public Integer getId() {
@@ -82,14 +76,6 @@ public class User {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -98,20 +84,20 @@ public class User {
         this.password = password;
     }
 
-    public Set<Rating> getRatings() {
-        return ratings;
+    public String getRole() {
+        return role;
     }
 
-    public void setRatings(Set<Rating> ratings) {
-        this.ratings = ratings;
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public Set<Genre> getGenres() {
+        return genres;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setGenres(Set<Genre> genres) {
+        this.genres = genres;
     }
 
     public Set<Watchlist> getWatchlists() {

@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "seasons")
 public class Season {
     @Id
-    @Column(name = "seasonid", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "season_id", nullable = false)
     private Integer id;
 
     @Column(name = "season_number")
@@ -21,8 +23,11 @@ public class Season {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "tvseries_tvseriesid", nullable = false)
-    private Tvseries tvseriesTvseriesid;
+    @JoinColumn(name = "series_series_id", nullable = false)
+    private Series seriesSeries;
+
+    @OneToMany(mappedBy = "seasonsSeason")
+    private Set<Episode> episodes = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -48,12 +53,20 @@ public class Season {
         this.releaseYear = releaseYear;
     }
 
-    public Tvseries getTvseriesTvseriesid() {
-        return tvseriesTvseriesid;
+    public Series getSeriesSeries() {
+        return seriesSeries;
     }
 
-    public void setTvseriesTvseriesid(Tvseries tvseriesTvseriesid) {
-        this.tvseriesTvseriesid = tvseriesTvseriesid;
+    public void setSeriesSeries(Series seriesSeries) {
+        this.seriesSeries = seriesSeries;
+    }
+
+    public Set<Episode> getEpisodes() {
+        return episodes;
+    }
+
+    public void setEpisodes(Set<Episode> episodes) {
+        this.episodes = episodes;
     }
 
 }

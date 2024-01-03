@@ -6,27 +6,36 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.polsl.filmoteka.models.Movie;
-import pl.polsl.filmoteka.services.MovieService;
+import pl.polsl.filmoteka.repositories.MovieRepository;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/movies")
 public class MovieController {
-    private final MovieService movieService;
+
+    private final MovieRepository movieRepository;
 
     @Autowired
-    public MovieController(MovieService movieService) {
-        this.movieService = movieService;
+    public MovieController(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
     }
 
     @GetMapping
     public List<Movie> getAllMovies() {
-        return movieService.getAllMovies();
+        return movieRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public Movie getMovieById(@PathVariable Integer id) {
-        return movieService.getMovieById(id);
+    @GetMapping("/byYear/{year}")
+    public List<Movie> getMoviesByYear(@PathVariable Integer year) {
+        return movieRepository.findByReleaseYear(year);
+
     }
+    @GetMapping("/byTitle/{title}")
+    public List<Movie> getMoviesByTitle(@PathVariable String title) {
+        return movieRepository.findByTitle(title);
+
+    }
+
 }
+

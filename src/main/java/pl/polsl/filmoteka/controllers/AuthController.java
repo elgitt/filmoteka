@@ -43,12 +43,7 @@ public class AuthController {
     public String registration(@Valid @ModelAttribute("user") UserDto userDto,
                                BindingResult result,
                                Model model) {
-        User existingUserByEmail = userService.findUserByEmail(userDto.getEmail());
         User existingUserByUsername = userService.findUserByUsername(userDto.getUsername());
-
-        if (existingUserByEmail != null && existingUserByEmail.getEmail() != null && !existingUserByEmail.getEmail().isEmpty()) {
-            result.rejectValue("email", null, "There is already an account registered with the same email");
-        }
 
         if (existingUserByUsername != null && existingUserByUsername.getUsername() != null && !existingUserByUsername.getUsername().isEmpty()) {
             result.rejectValue("username", null, "This username is already taken");

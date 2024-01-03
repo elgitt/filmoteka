@@ -1,17 +1,18 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "actors")
 public class Actor {
     @Id
-    @Column(name = "actorid", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "actor_id", nullable = false)
     private Integer id;
 
     @Size(max = 50)
@@ -29,11 +30,17 @@ public class Actor {
     @Column(name = "nationality", length = 50)
     private String nationality;
 
-    @ManyToMany(mappedBy = "actors", fetch = FetchType.LAZY)
-    private Set<Movie> movies = new HashSet<>();
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "movie_cast",
+            joinColumns = @JoinColumn(name = "actors_actor_id"))
+    private Set<Movie> movies = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "actors", fetch = FetchType.LAZY)
-    private Set<Tvseries> tvseries = new HashSet<>();
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "series_cast",
+            joinColumns = @JoinColumn(name = "actors_actor_id"))
+    private Set<Series> series = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -73,6 +80,22 @@ public class Actor {
 
     public void setNationality(String nationality) {
         this.nationality = nationality;
+    }
+
+    public Set<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(Set<Movie> movies) {
+        this.movies = movies;
+    }
+
+    public Set<Series> getSeries() {
+        return series;
+    }
+
+    public void setSeries(Set<Series> series) {
+        this.series = series;
     }
 
 }

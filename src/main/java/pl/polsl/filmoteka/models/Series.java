@@ -3,16 +3,16 @@ package pl.polsl.filmoteka.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "movies")
-public class Movie {
+@Table(name = "series")
+public class Series {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "movie_id", nullable = false)
+    @Column(name = "series_id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
@@ -27,21 +27,30 @@ public class Movie {
     @Column(name = "director", length = 100)
     private String director;
 
-    @Column(name = "release_year")
-    private Integer releaseYear;
+    @Column(name = "time_frame_start")
+    private LocalDate timeFrameStart;
 
-    @Column(name = "duration")
-    private LocalTime duration;
+    @Column(name = "time_frame_end")
+    private LocalDate timeFrameEnd;
 
     @Lob
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "movies")
+    @OneToMany(mappedBy = "seriesSeries")
+    private Set<Rating> ratings = new LinkedHashSet<>();
+
+      @ManyToMany(mappedBy = "series")
     private Set<Actor> actors = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "movies")
+    @ManyToMany(mappedBy = "series")
     private Set<Genre> genres = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "seriesSeries")
+    private Set<Watchlist> watchlists = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "seriesSeries")
+    private Set<Season> seasons = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -75,20 +84,20 @@ public class Movie {
         this.director = director;
     }
 
-    public Integer getReleaseYear() {
-        return releaseYear;
+    public LocalDate getTimeFrameStart() {
+        return timeFrameStart;
     }
 
-    public void setReleaseYear(Integer releaseYear) {
-        this.releaseYear = releaseYear;
+    public void setTimeFrameStart(LocalDate timeFrameStart) {
+        this.timeFrameStart = timeFrameStart;
     }
 
-    public LocalTime getDuration() {
-        return duration;
+    public LocalDate getTimeFrameEnd() {
+        return timeFrameEnd;
     }
 
-    public void setDuration(LocalTime duration) {
-        this.duration = duration;
+    public void setTimeFrameEnd(LocalDate timeFrameEnd) {
+        this.timeFrameEnd = timeFrameEnd;
     }
 
     public String getDescription() {
@@ -97,6 +106,22 @@ public class Movie {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<Rating> ratings) {
+        this.ratings = ratings;
+    }
+
+    public Set<Season> getSeasons() {
+        return seasons;
+    }
+
+    public void setSeasons(Set<Season> seasons) {
+        this.seasons = seasons;
     }
 
     public Set<Actor> getActors() {
@@ -113,6 +138,14 @@ public class Movie {
 
     public void setGenres(Set<Genre> genres) {
         this.genres = genres;
+    }
+
+    public Set<Watchlist> getWatchlists() {
+        return watchlists;
+    }
+
+    public void setWatchlists(Set<Watchlist> watchlists) {
+        this.watchlists = watchlists;
     }
 
 }

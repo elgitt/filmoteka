@@ -1,44 +1,25 @@
 package pl.polsl.filmoteka.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.polsl.filmoteka.models.Genre;
-import pl.polsl.filmoteka.services.GenreService;
+import pl.polsl.filmoteka.repositories.GenreRepository;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/genres")
+@RequestMapping("/genres")
 public class GenreController {
-    private final GenreService genreService;
 
-    @Autowired
-    public GenreController(GenreService genreService) {
-        this.genreService = genreService;
+    private GenreRepository genreRepository;
+
+    public GenreController(GenreRepository genreRepository) {
+        this.genreRepository = genreRepository;
     }
 
     @GetMapping
-    public List<Genre> getAllGenres() {
-        return genreService.getAllGenres();
-    }
-
-    @GetMapping("/{id}")
-    public Genre getGenreById(@PathVariable Integer id) {
-        return genreService.getGenreById(id);
-    }
-
-    @PostMapping
-    public void addGenre(@RequestBody Genre genre) {
-        genreService.addGenre(genre);
-    }
-
-    @PutMapping("/{id}")
-    public void updateGenre(@PathVariable Integer id, @RequestBody Genre updatedGenre) {
-        genreService.updateGenre(id, updatedGenre);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteGenre(@PathVariable Integer id) {
-        genreService.deleteGenre(id);
+   public List<Genre> getAllGenres(){
+        return genreRepository.findAll();
     }
 }
