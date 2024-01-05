@@ -24,12 +24,15 @@ public class UserService {
         user.setName(userDto.getName());
         user.setSurname(userDto.getSurname());
         user.setUsername(userDto.getUsername());
-        // encrypt the password
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        // Ustawiamy stałą rolę dla większości użytkowników
+        String password = userDto.getPassword();
+        if (password != null && !password.isEmpty()) {
+            user.setPassword(passwordEncoder.encode(password));
+        } else {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
+
         user.setRole("USER");
-
         userRepository.save(user);
     }
 

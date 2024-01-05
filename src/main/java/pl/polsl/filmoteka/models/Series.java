@@ -1,5 +1,6 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "series")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Series {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,20 +39,41 @@ public class Series {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "seriesSeries")
-    private Set<Rating> ratings = new LinkedHashSet<>();
-
-      @ManyToMany(mappedBy = "series")
+    @ManyToMany(mappedBy = "series")
+    @JsonManagedReference //okej
     private Set<Actor> actors = new LinkedHashSet<>();
 
     @ManyToMany(mappedBy = "series")
+    @JsonManagedReference //okej
     private Set<Genre> genres = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "seriesSeries")
+    @JsonBackReference  //okej
     private Set<Watchlist> watchlists = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "seriesSeries")
+    @JsonBackReference //okej
+    private Set<Rating> ratings = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "seriesSeries")
+    @JsonManagedReference //okej
     private Set<Season> seasons = new LinkedHashSet<>();
+
+    public Series() {
+    }
+
+    public Series(Integer id, String posterLink, String title, String director, LocalDate timeFrameStart, LocalDate timeFrameEnd, String description,  Set<Actor> actors, Set<Genre> genres,  Set<Season> seasons) {
+        this.id = id;
+        this.posterLink = posterLink;
+        this.title = title;
+        this.director = director;
+        this.timeFrameStart = timeFrameStart;
+        this.timeFrameEnd = timeFrameEnd;
+        this.description = description;
+        this.actors = actors;
+        this.genres = genres;
+         this.seasons = seasons;
+    }
 
     public Integer getId() {
         return id;

@@ -1,5 +1,8 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,6 +11,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "episodes")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Episode {
     @Id
     @Column(name = "episode_id", nullable = false)
@@ -26,7 +30,19 @@ public class Episode {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seasons_season_id", nullable = false)
+    @JsonIgnoreProperties("episodes")
     private Season seasonsSeason;
+
+    public Episode() {
+    }
+
+    public Episode(Integer id, Integer episodeNumber, String episodeTitle, LocalDate releaseDate, Season seasonsSeason) {
+        this.id = id;
+        this.episodeNumber = episodeNumber;
+        this.episodeTitle = episodeTitle;
+        this.releaseDate = releaseDate;
+        this.seasonsSeason = seasonsSeason;
+    }
 
     public Integer getId() {
         return id;

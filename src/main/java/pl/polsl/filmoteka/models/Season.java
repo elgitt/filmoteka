@@ -1,5 +1,9 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "seasons")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Season {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +29,22 @@ public class Season {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "series_series_id", nullable = false)
+    @JsonBackReference  //okej
     private Series seriesSeries;
 
     @OneToMany(mappedBy = "seasonsSeason")
+    @JsonManagedReference  //okej
     private Set<Episode> episodes = new LinkedHashSet<>();
+
+    public Season() {
+    }
+
+    public Season(Integer id, Integer seasonNumber, LocalDate releaseYear, Series seriesSeries) {
+        this.id = id;
+        this.seasonNumber = seasonNumber;
+        this.releaseYear = releaseYear;
+        this.seriesSeries = seriesSeries;
+    }
 
     public Integer getId() {
         return id;

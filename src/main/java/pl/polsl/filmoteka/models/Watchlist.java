@@ -1,9 +1,10 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "watchlists")
@@ -13,22 +14,57 @@ public class Watchlist {
     @Column(name = "watchlist_id", nullable = false)
     private Integer id;
 
-    @Column(name = "ismovie")
-    private Character ismovie;
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "series_series_id")
+    @JsonManagedReference  //okej
+    private Series seriesSeries;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "users_userid", nullable = false)
-    private User usersUserid;
+    @JoinColumn(name = "users_user_id")
+    @JsonBackReference //okej
+    private User usersUser;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movies_movieid")
-    private Movie moviesMovieid;
+    @JoinColumn(name = "movies_movie_id")
+    @JsonManagedReference //okej
+    private Movie moviesMovie;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_series_id")
-    private Series seriesSeries;
+    @Column(name = "movie_series_id")
+    private Integer movieSeriesId;
+
+    @Lob
+    @Column(name = "movie_series_type")
+    private String movieSeriesType;
+
+
+    public Watchlist() {
+    }
+
+    public Watchlist(Integer id, Series seriesSeries, User usersUser, Movie moviesMovie) {
+        this.id = id;
+        this.seriesSeries = seriesSeries;
+        this.usersUser = usersUser;
+        this.moviesMovie = moviesMovie;
+    }
+
+    public Movie getMoviesMovie() {
+        return moviesMovie;
+    }
+
+    public void setMoviesMovie(Movie moviesMovie) {
+        this.moviesMovie = moviesMovie;
+    }
+
+    public User getUsersUser() {
+        return usersUser;
+    }
+
+    public void setUsersUser(User usersUser) {
+        this.usersUser = usersUser;
+    }
 
     public Integer getId() {
         return id;
@@ -38,29 +74,6 @@ public class Watchlist {
         this.id = id;
     }
 
-    public Character getIsmovie() {
-        return ismovie;
-    }
-
-    public void setIsmovie(Character ismovie) {
-        this.ismovie = ismovie;
-    }
-
-    public User getUsersUserid() {
-        return usersUserid;
-    }
-
-    public void setUsersUserid(User usersUserid) {
-        this.usersUserid = usersUserid;
-    }
-
-    public Movie getMoviesMovieid() {
-        return moviesMovieid;
-    }
-
-    public void setMoviesMovieid(Movie moviesMovieid) {
-        this.moviesMovieid = moviesMovieid;
-    }
 
     public Series getSeriesSeries() {
         return seriesSeries;
@@ -68,6 +81,21 @@ public class Watchlist {
 
     public void setSeriesSeries(Series seriesSeries) {
         this.seriesSeries = seriesSeries;
+    }
+    public String getMovieSeriesType() {
+        return movieSeriesType;
+    }
+
+    public void setMovieSeriesType(String movieSeriesType) {
+        this.movieSeriesType = movieSeriesType;
+    }
+
+    public Integer getMovieSeriesId() {
+        return movieSeriesId;
+    }
+
+    public void setMovieSeriesId(Integer movieSeriesId) {
+        this.movieSeriesId = movieSeriesId;
     }
 
 }

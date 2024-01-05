@@ -1,14 +1,19 @@
 package pl.polsl.filmoteka.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "actors")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,17 +35,31 @@ public class Actor {
     @Column(name = "nationality", length = 50)
     private String nationality;
 
-    @JsonIgnore
+
     @ManyToMany
     @JoinTable(name = "movie_cast",
             joinColumns = @JoinColumn(name = "actors_actor_id"))
-    private Set<Movie> movies = new LinkedHashSet<>();
+    @JsonBackReference  //okej
+    private List<Movie> movies = new ArrayList<>();
 
-    @JsonIgnore
+
     @ManyToMany
     @JoinTable(name = "series_cast",
             joinColumns = @JoinColumn(name = "actors_actor_id"))
+    @JsonBackReference  //okej
     private Set<Series> series = new LinkedHashSet<>();
+
+    public Actor() {
+
+    }
+
+    public Actor(Integer id, String name, String surname, Character gender, String nationality) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.gender = gender;
+        this.nationality = nationality;
+    }
 
     public Integer getId() {
         return id;
@@ -82,13 +101,9 @@ public class Actor {
         this.nationality = nationality;
     }
 
-    public Set<Movie> getMovies() {
-        return movies;
-    }
+    public List<Movie> getMovies() { return movies; }
 
-    public void setMovies(Set<Movie> movies) {
-        this.movies = movies;
-    }
+    public void setMovies(List<Movie> movies) { this.movies = movies; }
 
     public Set<Series> getSeries() {
         return series;

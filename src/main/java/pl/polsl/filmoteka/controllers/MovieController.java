@@ -1,14 +1,15 @@
 package pl.polsl.filmoteka.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.polsl.filmoteka.models.Actor;
+import pl.polsl.filmoteka.models.Genre;
 import pl.polsl.filmoteka.models.Movie;
+import pl.polsl.filmoteka.repositories.ActorRepository;
+import pl.polsl.filmoteka.repositories.GenreRepository;
 import pl.polsl.filmoteka.repositories.MovieRepository;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/movies")
@@ -16,15 +17,17 @@ public class MovieController {
 
     private final MovieRepository movieRepository;
 
-    @Autowired
-    public MovieController(MovieRepository movieRepository) {
+
+    public MovieController(MovieRepository movieRepository, GenreRepository genreRepository, ActorRepository actorRepository) {
         this.movieRepository = movieRepository;
+
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+      return movieRepository.findAll();
     }
+
 
     @GetMapping("/byYear/{year}")
     public List<Movie> getMoviesByYear(@PathVariable Integer year) {
@@ -36,6 +39,39 @@ public class MovieController {
         return movieRepository.findByTitle(title);
 
     }
+
+    @GetMapping("/genres/{id}")
+    public Set<Genre> getGenresByMovieId(@PathVariable Integer id) {
+        Movie movie = movieRepository.findById(id).orElse(null);
+        return (movie != null) ? movie.getGenres() : null;
+    }
+
+    @GetMapping("/actors/{id}")
+    public List<Actor> getActorsByMovieId(@PathVariable Integer id) {
+        Movie movie = movieRepository.findById(id).orElse(null);
+        return (movie != null) ? movie.getActors() : null;
+    }
+
+    @GetMapping("/{id}")
+    public Movie getMovieById(@PathVariable Integer id) {
+        return movieRepository.findById(id).orElse(null);
+    }
+
+    @PostMapping("/add")
+    public Movie addMovie(@RequestBody Movie movie) {
+        return movieRepository.save(movie);
+    }
+
+    @PutMapping("/update")
+    public Movie updateMovie(@RequestBody Movie movie) {
+        return movieRepository.save(movie);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteMovie(@PathVariable Integer id) {
+        movieRepository.deleteById(id);
+    }
+
 
 }
 

@@ -1,5 +1,6 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,10 +40,44 @@ public class User {
     @ManyToMany
     @JoinTable(name = "user_genre_preferences",
             joinColumns = @JoinColumn(name = "users_user_id"))
+    @JsonManagedReference  //okej
     private Set<Genre> genres = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "usersUserid")
+    @OneToMany(mappedBy = "usersUser")
+    @JsonManagedReference  //okej
+    private Set<Rating> ratings = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "usersUser")
+    @JsonManagedReference  //okej
     private Set<Watchlist> watchlists = new LinkedHashSet<>();
+
+    public User() {
+    }
+
+    public User(Integer id, String name, String surname, String username, String password, String role) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    public Set<Watchlist> getWatchlists() {
+        return watchlists;
+    }
+
+    public void setWatchlists(Set<Watchlist> watchlists) {
+        this.watchlists = watchlists;
+    }
+
+    public Set<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<Rating> ratings) {
+        this.ratings = ratings;
+    }
 
     public Integer getId() {
         return id;
@@ -100,12 +135,5 @@ public class User {
         this.genres = genres;
     }
 
-    public Set<Watchlist> getWatchlists() {
-        return watchlists;
-    }
-
-    public void setWatchlists(Set<Watchlist> watchlists) {
-        this.watchlists = watchlists;
-    }
 
 }

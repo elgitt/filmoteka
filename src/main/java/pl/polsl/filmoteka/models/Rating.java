@@ -1,10 +1,18 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "ratings")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,20 +22,41 @@ public class Rating {
     @Column(name = "rating")
     private Integer rating;
 
-    @Column(name = "ismovie")
-    private Character ismovie;
-
-    @NotNull
-    @Column(name = "users_userid", nullable = false)
-    private Integer usersUserid;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movies_movieid")
-    private Movie moviesMovieid;
+    @Nullable
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "series_series_id")
+    @JsonManagedReference //okej
     private Series seriesSeries;
+
+    @Nullable
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movies_movie_id")
+    @JsonManagedReference //okej
+    private Movie moviesMovie;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "users_user_id", nullable = false)
+    @JsonBackReference //okej
+    private User usersUser;
+
+    @Column(name = "rating_date")
+    private LocalDate ratingDate;
+
+
+    public Rating() {
+    }
+
+    public Rating(Integer id, Integer rating, Series seriesSeries, Movie moviesMovie, User usersUser, LocalDate ratingDate) {
+        this.id = id;
+        this.rating = rating;
+        this.ratingDate = ratingDate;
+        this.seriesSeries = seriesSeries;
+        this.moviesMovie = moviesMovie;
+        this.usersUser = usersUser;
+    }
 
     public Integer getId() {
         return id;
@@ -45,29 +74,6 @@ public class Rating {
         this.rating = rating;
     }
 
-    public Character getIsmovie() {
-        return ismovie;
-    }
-
-    public void setIsmovie(Character ismovie) {
-        this.ismovie = ismovie;
-    }
-
-    public Integer getUsersUserid() {
-        return usersUserid;
-    }
-
-    public void setUsersUserid(Integer usersUserid) {
-        this.usersUserid = usersUserid;
-    }
-
-    public Movie getMoviesMovieid() {
-        return moviesMovieid;
-    }
-
-    public void setMoviesMovieid(Movie moviesMovieid) {
-        this.moviesMovieid = moviesMovieid;
-    }
 
     public Series getSeriesSeries() {
         return seriesSeries;
@@ -77,4 +83,28 @@ public class Rating {
         this.seriesSeries = seriesSeries;
     }
 
+    public Movie getMoviesMovie() {
+        return moviesMovie;
+    }
+
+    public void setMoviesMovie(Movie moviesMovie) {
+        this.moviesMovie = moviesMovie;
+    }
+
+    public User getUsersUser() {
+        return usersUser;
+    }
+
+    public void setUsersUser(User usersUser) {
+        this.usersUser = usersUser;
+    }
+
+
+    public LocalDate getRatingDate() {
+        return ratingDate;
+    }
+
+    public void setRatingDate(LocalDate ratingDate) {
+        this.ratingDate = ratingDate;
+    }
 }

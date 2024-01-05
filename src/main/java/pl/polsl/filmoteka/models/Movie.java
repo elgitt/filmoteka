@@ -1,14 +1,21 @@
 package pl.polsl.filmoteka.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "movies")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +45,52 @@ public class Movie {
     private String description;
 
     @ManyToMany(mappedBy = "movies")
-    private Set<Actor> actors = new LinkedHashSet<>();
+    @JsonManagedReference  //okej
+    private List<Actor> actors = new ArrayList<>();
 
     @ManyToMany(mappedBy = "movies")
+    //   @JsonManagedReference  //okej
     private Set<Genre> genres = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "moviesMovie")
+    @JsonBackReference  //okej
+    private Set<Rating> ratings = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "moviesMovie")
+    @JsonBackReference  //okej
+    private Set<Watchlist> watchlists = new LinkedHashSet<>();
+
+    public Movie() {
+    }
+
+    public Movie(Integer id, String posterLink, String title, String director, Integer releaseYear, LocalTime duration, String description, List<Actor> actors, Set<Genre> genres) {
+        this.id = id;
+        this.posterLink = posterLink;
+        this.title = title;
+        this.director = director;
+        this.releaseYear = releaseYear;
+        this.duration = duration;
+        this.description = description;
+        this.actors = actors;
+        this.genres = genres;
+    }
+
+
+    public Set<Watchlist> getWatchlists() {
+        return watchlists;
+    }
+
+    public void setWatchlists(Set<Watchlist> watchlists) {
+        this.watchlists = watchlists;
+    }
+
+    public Set<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<Rating> ratings) {
+        this.ratings = ratings;
+    }
 
     public Integer getId() {
         return id;
@@ -99,11 +148,11 @@ public class Movie {
         this.description = description;
     }
 
-    public Set<Actor> getActors() {
+    public List<Actor> getActors() {
         return actors;
     }
 
-    public void setActors(Set<Actor> actors) {
+    public void setActors(List<Actor> actors) {
         this.actors = actors;
     }
 
