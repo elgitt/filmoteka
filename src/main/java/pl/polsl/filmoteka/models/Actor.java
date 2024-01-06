@@ -1,19 +1,14 @@
 package pl.polsl.filmoteka.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "actors")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Actor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +31,7 @@ public class Actor {
     private String nationality;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "movie_cast",
             joinColumns = @JoinColumn(name = "actors_actor_id"))
     @JsonBackReference  //okej
@@ -47,7 +42,8 @@ public class Actor {
     @JoinTable(name = "series_cast",
             joinColumns = @JoinColumn(name = "actors_actor_id"))
     @JsonBackReference  //okej
-    private Set<Series> series = new LinkedHashSet<>();
+    private List<Series> series = new ArrayList<>();
+
 
     public Actor() {
 
@@ -59,6 +55,18 @@ public class Actor {
         this.surname = surname;
         this.gender = gender;
         this.nationality = nationality;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Actor actor)) return false;
+        return Objects.equals(getId(), actor.getId()) && Objects.equals(getName(), actor.getName()) && Objects.equals(getSurname(), actor.getSurname()) && Objects.equals(getGender(), actor.getGender()) && Objects.equals(getNationality(), actor.getNationality()) && Objects.equals(getMovies(), actor.getMovies()) && Objects.equals(getSeries(), actor.getSeries());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getSurname(), getGender(), getNationality(), getMovies(), getSeries());
     }
 
     public Integer getId() {
@@ -105,11 +113,11 @@ public class Actor {
 
     public void setMovies(List<Movie> movies) { this.movies = movies; }
 
-    public Set<Series> getSeries() {
+    public List<Series> getSeries() {
         return series;
     }
 
-    public void setSeries(Set<Series> series) {
+    public void setSeries(List<Series> series) {
         this.series = series;
     }
 

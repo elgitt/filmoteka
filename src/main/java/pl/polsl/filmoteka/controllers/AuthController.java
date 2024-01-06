@@ -2,40 +2,50 @@ package pl.polsl.filmoteka.controllers;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import pl.polsl.filmoteka.dto.UserDto;
 import pl.polsl.filmoteka.models.User;
+import pl.polsl.filmoteka.repositories.UserRepository;
 import pl.polsl.filmoteka.services.UserService;
+
+import java.util.Map;
 
 @RestController
 public class AuthController {
 
+    private UserRepository userRepository;
+
     private UserService userService;
 
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    public AuthController(UserService userService) {
+    public AuthController(UserRepository userRepository, UserService userService, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // homepage
     @GetMapping("/index")
     public String home(){
         return "index";
     }
 
-    // handler method to handle user registration form request
     @GetMapping("/register")
     public String showRegistrationForm(Model model){
-        // create model object to store form data
         UserDto user = new UserDto();
         model.addAttribute("user", user);
         return "register";
     }
 
-    // handler method to handle user registration form submit request
     @PostMapping("/register/save")
     public ResponseEntity<String> registration(@Valid @RequestBody UserDto userDto,
                                                BindingResult result) {
@@ -56,11 +66,21 @@ public class AuthController {
         return ResponseEntity.ok("Registration successful!");
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+        String username = credentials.get("username");
+        String password = credentials.get("password");
+        try {
+            User existingUser = userRepository.findByUsername(username);
 
-    @GetMapping("/login")
-    public String login(){
-        return "login";
+            if (existingUser != null && passwordEncoder.matches(password, existingUser.getPassword())) {
+                return new ResponseEntity<>(existingUser, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
     }
-
-
 }

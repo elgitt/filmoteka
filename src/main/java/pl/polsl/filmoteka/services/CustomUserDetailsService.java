@@ -1,4 +1,4 @@
-package pl.polsl.filmoteka.config;
+package pl.polsl.filmoteka.services;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,4 +31,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
     }
+
+
 }

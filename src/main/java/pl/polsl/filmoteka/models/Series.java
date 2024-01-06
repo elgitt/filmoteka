@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "series")
@@ -41,28 +41,28 @@ public class Series {
 
     @ManyToMany(mappedBy = "series")
     @JsonManagedReference //okej
-    private Set<Actor> actors = new LinkedHashSet<>();
+    private List<Actor> actors = new ArrayList<>();
 
     @ManyToMany(mappedBy = "series")
     @JsonManagedReference //okej
-    private Set<Genre> genres = new LinkedHashSet<>();
+    private List<Genre> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "seriesSeries")
     @JsonBackReference  //okej
-    private Set<Watchlist> watchlists = new LinkedHashSet<>();
+    private List<Watchlist> watchlists = new ArrayList<>();
 
     @OneToMany(mappedBy = "seriesSeries")
     @JsonBackReference //okej
-    private Set<Rating> ratings = new LinkedHashSet<>();
+    private List<Rating> ratings = new ArrayList<>();
 
     @OneToMany(mappedBy = "seriesSeries")
     @JsonManagedReference //okej
-    private Set<Season> seasons = new LinkedHashSet<>();
+    private List<Season> seasons = new ArrayList<>();
 
     public Series() {
     }
 
-    public Series(Integer id, String posterLink, String title, String director, LocalDate timeFrameStart, LocalDate timeFrameEnd, String description,  Set<Actor> actors, Set<Genre> genres,  Set<Season> seasons) {
+    public Series(Integer id, String posterLink, String title, String director, LocalDate timeFrameStart, LocalDate timeFrameEnd, String description,  List<Actor> actors, List<Genre> genres,  List<Season> seasons) {
         this.id = id;
         this.posterLink = posterLink;
         this.title = title;
@@ -72,7 +72,7 @@ public class Series {
         this.description = description;
         this.actors = actors;
         this.genres = genres;
-         this.seasons = seasons;
+        this.seasons = seasons;
     }
 
     public Integer getId() {
@@ -131,43 +131,43 @@ public class Series {
         this.description = description;
     }
 
-    public Set<Rating> getRatings() {
+    public List<Rating> getRatings() {
         return ratings;
     }
 
-    public void setRatings(Set<Rating> ratings) {
+    public void setRatings(List<Rating> ratings) {
         this.ratings = ratings;
     }
 
-    public Set<Season> getSeasons() {
+    public List<Season> getSeasons() {
         return seasons;
     }
 
-    public void setSeasons(Set<Season> seasons) {
+    public void setSeasons(List<Season> seasons) {
         this.seasons = seasons;
     }
 
-    public Set<Actor> getActors() {
+    public List<Actor> getActors() {
         return actors;
     }
 
-    public void setActors(Set<Actor> actors) {
+    public void setActors(List<Actor> actors) {
         this.actors = actors;
     }
 
-    public Set<Genre> getGenres() {
+    public List<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(Set<Genre> genres) {
+    public void setGenres(List<Genre> genres) {
         this.genres = genres;
     }
 
-    public Set<Watchlist> getWatchlists() {
+    public List<Watchlist> getWatchlists() {
         return watchlists;
     }
 
-    public void setWatchlists(Set<Watchlist> watchlists) {
+    public void setWatchlists(List<Watchlist> watchlists) {
         this.watchlists = watchlists;
     }
 

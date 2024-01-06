@@ -7,7 +7,6 @@ import pl.polsl.filmoteka.models.Series;
 import pl.polsl.filmoteka.repositories.GenreRepository;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/genres")
@@ -45,13 +44,13 @@ public class GenreController {
     }
 
     @GetMapping("/{id}/movies")
-    public Set<Movie> getMoviesByGenreId(@PathVariable Integer id) {
+    public List<Movie> getMoviesByGenreId(@PathVariable Integer id) {
         Genre genre = genreRepository.findById(id).orElse(null);
         return (genre != null) ? genre.getMovies() : null;
     }
 
     @GetMapping("/{id}/series")
-    public Set<Series> getSeriesByGenreId(@PathVariable Integer id) {
+    public List<Series> getSeriesByGenreId(@PathVariable Integer id) {
         Genre genre = genreRepository.findById(id).orElse(null);
         return (genre != null) ? genre.getSeries() : null;
     }

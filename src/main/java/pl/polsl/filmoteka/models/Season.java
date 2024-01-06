@@ -8,8 +8,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "seasons")
@@ -34,7 +34,7 @@ public class Season {
 
     @OneToMany(mappedBy = "seasonsSeason")
     @JsonManagedReference  //okej
-    private Set<Episode> episodes = new LinkedHashSet<>();
+    private List<Episode> episodes = new ArrayList<>();
 
     public Season() {
     }
@@ -78,11 +78,11 @@ public class Season {
         this.seriesSeries = seriesSeries;
     }
 
-    public Set<Episode> getEpisodes() {
+    public List<Episode> getEpisodes() {
         return episodes;
     }
 
-    public void setEpisodes(Set<Episode> episodes) {
+    public void setEpisodes(List<Episode> episodes) {
         this.episodes = episodes;
     }
 

@@ -1,17 +1,15 @@
 package pl.polsl.filmoteka.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "genres")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,27 +20,27 @@ public class Genre {
     @Column(name = "genre", length = 50)
     private String genre;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "movie_genres",
             joinColumns = @JoinColumn(name = "genres_genre_id"))
-   // @JsonBackReference  //okej
-    private Set<Movie> movies = new LinkedHashSet<>();
+    @JsonBackReference  //okej
+    private List<Movie> movies = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "series_genres",
             joinColumns = @JoinColumn(name = "genres_genre_id"))
     @JsonBackReference //okej
-    private Set<Series> series = new LinkedHashSet<>();
+    private List<Series> series = new ArrayList<>();
 
     @ManyToMany(mappedBy = "genres")
     @JsonBackReference //okej
-    private Set<User> users = new LinkedHashSet<>();
+    private List<User> users = new ArrayList<>();
 
-    public Set<User> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
 
-    public void setUsers(Set<User> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 
@@ -70,19 +68,19 @@ public class Genre {
         this.genre = genre;
     }
 
-    public Set<Movie> getMovies() {
+    public List<Movie> getMovies() {
         return movies;
     }
 
-    public void setMovies(Set<Movie> movies) {
+    public void setMovies(List<Movie> movies) {
         this.movies = movies;
     }
 
-    public Set<Series> getSeries() {
+    public List<Series> getSeries() {
         return series;
     }
 
-    public void setSeries(Set<Series> series) {
+    public void setSeries(List<Series> series) {
         this.series = series;
     }
 

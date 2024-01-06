@@ -9,9 +9,8 @@ import pl.polsl.filmoteka.models.Series;
 import pl.polsl.filmoteka.repositories.ActorRepository;
 import pl.polsl.filmoteka.repositories.SeriesRepository;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/series")
@@ -33,17 +32,17 @@ public class SeriesController {
         List<Series> seriesList = seriesRepository.findAll();
 
         for (Series series : seriesList) {
-            Set<Actor> actors = actorRepository.findBySeriesId(series.getId());
-            Set<Actor> fullActorSet = new HashSet<>();
+            List<Actor> actors = actorRepository.findBySeriesId(series.getId());
+            List<Actor> fullActorList = new ArrayList<>();
 
             for (Actor actor : actors) {
                 Actor fullActor = actorRepository.findById(actor.getId()).orElse(null);
                 if (fullActor != null) {
-                    fullActorSet.add(fullActor);
+                    fullActorList.add(fullActor);
                 }
             }
 
-            series.setActors(fullActorSet);
+            series.setActors(fullActorList);
         }
 
         return seriesList;
@@ -70,19 +69,19 @@ public class SeriesController {
     }
 
     @GetMapping("/{id}/actors")
-    public Set<Actor> getActorsBySeriesId(@PathVariable Integer id) {
+    public List<Actor> getActorsBySeriesId(@PathVariable Integer id) {
         Series series = seriesRepository.findById(id).orElse(null);
         return (series != null) ? series.getActors() : null;
     }
 
     @GetMapping("/{id}/genres")
-    public Set<Genre> getGenresBySeriesId(@PathVariable Integer id) {
+    public List<Genre> getGenresBySeriesId(@PathVariable Integer id) {
         Series series = seriesRepository.findById(id).orElse(null);
         return (series != null) ? series.getGenres() : null;
     }
 
     @GetMapping("/{id}/seasons")
-    public Set<Season> getSeasonsBySeriesId(@PathVariable Integer id) {
+    public List<Season> getSeasonsBySeriesId(@PathVariable Integer id) {
         Series series = seriesRepository.findById(id).orElse(null);
         return (series != null) ? series.getSeasons() : null;
     }

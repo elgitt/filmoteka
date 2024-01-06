@@ -6,9 +6,6 @@ import pl.polsl.filmoteka.dto.UserDto;
 import pl.polsl.filmoteka.models.User;
 import pl.polsl.filmoteka.repositories.UserRepository;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class UserService {
     private UserRepository userRepository;
@@ -40,17 +37,30 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    private UserDto mapToUserDto(User user){
-        UserDto userDto = new UserDto();
-        userDto.setName(user.getName());
-        userDto.setSurname(user.getSurname());
-        return userDto;
+    public User loginUser(String username, String password) {
+        User existingUser = userRepository.findByUsername(username);
+
+        if (existingUser != null && passwordEncoder.matches(password, existingUser.getPassword())) {
+            return existingUser;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+
     }
 
-    public List<UserDto> findAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(this::mapToUserDto)
-                .collect(Collectors.toList());
-    }
+//    private UserDto mapToUserDto(User user){
+//        UserDto userDto = new UserDto();
+//        userDto.setId(user.getId());
+//        userDto.setName(user.getName());
+//        userDto.setSurname(user.getSurname());
+//        return userDto;
+//    }
+
+//    public List<UserDto> findAllUsers() {
+//        List<User> users = userRepository.findAll();
+//        return users.stream()
+//                .map(this::mapToUserDto)
+//                .collect(Collectors.toList());
+//    }
 }

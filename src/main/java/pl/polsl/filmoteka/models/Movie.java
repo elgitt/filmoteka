@@ -9,9 +9,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "movies")
@@ -49,21 +47,21 @@ public class Movie {
     private List<Actor> actors = new ArrayList<>();
 
     @ManyToMany(mappedBy = "movies")
-    //   @JsonManagedReference  //okej
-    private Set<Genre> genres = new LinkedHashSet<>();
+    @JsonManagedReference  //okej
+    private List<Genre> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "moviesMovie")
     @JsonBackReference  //okej
-    private Set<Rating> ratings = new LinkedHashSet<>();
+    private List<Rating> ratings = new ArrayList<>();
 
     @OneToMany(mappedBy = "moviesMovie")
     @JsonBackReference  //okej
-    private Set<Watchlist> watchlists = new LinkedHashSet<>();
+    private List<Watchlist> watchlists = new ArrayList<>();
 
     public Movie() {
     }
 
-    public Movie(Integer id, String posterLink, String title, String director, Integer releaseYear, LocalTime duration, String description, List<Actor> actors, Set<Genre> genres) {
+    public Movie(Integer id, String posterLink, String title, String director, Integer releaseYear, LocalTime duration, String description, List<Actor> actors, List<Genre> genres) {
         this.id = id;
         this.posterLink = posterLink;
         this.title = title;
@@ -76,19 +74,19 @@ public class Movie {
     }
 
 
-    public Set<Watchlist> getWatchlists() {
+    public List<Watchlist> getWatchlists() {
         return watchlists;
     }
 
-    public void setWatchlists(Set<Watchlist> watchlists) {
+    public void setWatchlists(List<Watchlist> watchlists) {
         this.watchlists = watchlists;
     }
 
-    public Set<Rating> getRatings() {
+    public List<Rating> getRatings() {
         return ratings;
     }
 
-    public void setRatings(Set<Rating> ratings) {
+    public void setRatings(List<Rating> ratings) {
         this.ratings = ratings;
     }
 
@@ -156,11 +154,11 @@ public class Movie {
         this.actors = actors;
     }
 
-    public Set<Genre> getGenres() {
+    public List<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(Set<Genre> genres) {
+    public void setGenres(List<Genre> genres) {
         this.genres = genres;
     }
 

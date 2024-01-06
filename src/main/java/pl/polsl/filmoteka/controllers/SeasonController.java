@@ -7,7 +7,6 @@ import pl.polsl.filmoteka.models.Season;
 import pl.polsl.filmoteka.repositories.SeasonRepository;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/seasons")
@@ -47,7 +46,7 @@ public class SeasonController {
     }
 
     @GetMapping("/{id}/episodes")
-    public Set<Episode> getEpisodesBySeasonId(@PathVariable Integer id) {
+    public List<Episode> getEpisodesBySeasonId(@PathVariable Integer id) {
         Season season = seasonRepository.findById(id).orElse(null);
         return (season != null) ? season.getEpisodes() : null;
     }

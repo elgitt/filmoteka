@@ -8,7 +8,6 @@ import pl.polsl.filmoteka.models.Series;
 import pl.polsl.filmoteka.repositories.ActorRepository;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/actors")
@@ -71,13 +70,13 @@ public class ActorController {
     }
 
     @GetMapping("/{id}/series")
-    public Set<Series> getTVShowsByActorId(@PathVariable Integer id) {
+    public List<Series> getTVShowsByActorId(@PathVariable Integer id) {
         Actor actor = actorRepository.findById(id).orElse(null);
         return actor != null ? actor.getSeries() : null;
     }
 
     @GetMapping("/series/{seriesId}")
-    public Set<Actor> getActorsBySeriesId(@PathVariable Integer seriesId) {
+    public List<Actor> getActorsBySeriesId(@PathVariable Integer seriesId) {
         return actorRepository.findBySeriesId(seriesId);
     }
 
