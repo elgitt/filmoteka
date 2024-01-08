@@ -47,9 +47,11 @@ public class User {
     @JsonManagedReference  //okej
     private List<Rating> ratings = new ArrayList<>();
 
+
     @OneToMany(mappedBy = "usersUser")
     @JsonManagedReference  //okej
     private List<Watchlist> watchlists = new ArrayList<>();
+
 
     public User() {
     }
@@ -62,6 +64,14 @@ public class User {
         this.password = password;
         this.role = role;
     }
+
+//    public List<Watchlist> getWatchlists() {
+//        return watchlists;
+//    }
+//
+//    public void setWatchlists(List<Watchlist> watchlists) {
+//        this.watchlists = watchlists;
+//    }
 
     public List<Watchlist> getWatchlists() {
         return watchlists;

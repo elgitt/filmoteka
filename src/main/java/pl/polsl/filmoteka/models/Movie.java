@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +34,6 @@ public class Movie {
     @Column(name = "release_year")
     private Integer releaseYear;
 
-    @Column(name = "duration")
-    private LocalTime duration;
-
     @Lob
     @Column(name = "description")
     private String description;
@@ -58,10 +54,29 @@ public class Movie {
     @JsonBackReference  //okej
     private List<Watchlist> watchlists = new ArrayList<>();
 
+    @Lob
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "seasons")
+    private Integer seasons;
+
+    @Size(max = 100)
+    @Column(name = "duration", length = 100)
+    private String duration;
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
     public Movie() {
     }
 
-    public Movie(Integer id, String posterLink, String title, String director, Integer releaseYear, LocalTime duration, String description, List<Actor> actors, List<Genre> genres) {
+    public Movie(Integer id, String posterLink, String title, String director, Integer releaseYear, String duration, String description, List<Actor> actors, List<Genre> genres) {
         this.id = id;
         this.posterLink = posterLink;
         this.title = title;
@@ -130,14 +145,6 @@ public class Movie {
         this.releaseYear = releaseYear;
     }
 
-    public LocalTime getDuration() {
-        return duration;
-    }
-
-    public void setDuration(LocalTime duration) {
-        this.duration = duration;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -160,6 +167,22 @@ public class Movie {
 
     public void setGenres(List<Genre> genres) {
         this.genres = genres;
+    }
+
+    public Integer getSeasons() {
+        return seasons;
+    }
+
+    public void setSeasons(Integer seasons) {
+        this.seasons = seasons;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

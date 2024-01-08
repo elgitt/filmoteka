@@ -9,15 +9,23 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class SeriesCastId implements Serializable {
-    private static final long serialVersionUID = -7004149476527221722L;
+public class CastId implements Serializable {
+    private static final long serialVersionUID = -2554502675517924929L;
+    @NotNull
+    @Column(name = "movies_movie_id", nullable = false)
+    private Integer moviesMovieId;
+
     @NotNull
     @Column(name = "actors_actor_id", nullable = false)
     private Integer actorsActorId;
 
-    @NotNull
-    @Column(name = "series_series_id", nullable = false)
-    private Integer seriesSeriesId;
+    public Integer getMoviesMovieId() {
+        return moviesMovieId;
+    }
+
+    public void setMoviesMovieId(Integer moviesMovieId) {
+        this.moviesMovieId = moviesMovieId;
+    }
 
     public Integer getActorsActorId() {
         return actorsActorId;
@@ -27,26 +35,18 @@ public class SeriesCastId implements Serializable {
         this.actorsActorId = actorsActorId;
     }
 
-    public Integer getSeriesSeriesId() {
-        return seriesSeriesId;
-    }
-
-    public void setSeriesSeriesId(Integer seriesSeriesId) {
-        this.seriesSeriesId = seriesSeriesId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        SeriesCastId entity = (SeriesCastId) o;
-        return Objects.equals(this.seriesSeriesId, entity.seriesSeriesId) &&
+        CastId entity = (CastId) o;
+        return Objects.equals(this.moviesMovieId, entity.moviesMovieId) &&
                 Objects.equals(this.actorsActorId, entity.actorsActorId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(seriesSeriesId, actorsActorId);
+        return Objects.hash(moviesMovieId, actorsActorId);
     }
 
 }

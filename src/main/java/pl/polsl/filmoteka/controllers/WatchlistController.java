@@ -1,12 +1,14 @@
 package pl.polsl.filmoteka.controllers;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.polsl.filmoteka.models.*;
+import pl.polsl.filmoteka.models.Movie;
+import pl.polsl.filmoteka.models.User;
+import pl.polsl.filmoteka.models.Watchlist;
 import pl.polsl.filmoteka.repositories.MovieRepository;
-import pl.polsl.filmoteka.repositories.SeriesRepository;
 import pl.polsl.filmoteka.repositories.UserRepository;
 import pl.polsl.filmoteka.repositories.WatchlistRepository;
 
@@ -20,14 +22,14 @@ public class WatchlistController {
 
     private final WatchlistRepository watchlistRepository;
     private final MovieRepository movieRepository;
-    private final SeriesRepository seriesRepository;
+   // private final SeriesRepository seriesRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public WatchlistController(WatchlistRepository watchlistRepository, MovieRepository movieRepository, SeriesRepository seriesRepository, UserRepository userRepository) {
+    public WatchlistController(WatchlistRepository watchlistRepository, MovieRepository movieRepository, UserRepository userRepository) {
         this.watchlistRepository = watchlistRepository;
         this.movieRepository = movieRepository;
-        this.seriesRepository = seriesRepository;
+        //this.seriesRepository = seriesRepository;
         this.userRepository = userRepository;
     }
 
@@ -37,113 +39,56 @@ public class WatchlistController {
     }
 
     @GetMapping("/getByUser")
-    public List<Object[]> getUserWatchlists(@RequestParam Integer userid){
-        return watchlistRepository.findUsersWatchlist(userid);
-    }
+    public ResponseEntity<List<Movie>> getUserWatchlists(@RequestParam Integer userId) {
+        List<Movie> userWatchlist = watchlistRepository.findMoviesInUserWatchlist(userId);
 
-
-
-    public ResponseEntity<String> addToWatchlist(@RequestParam Integer userId, @RequestParam Integer movieId,
-                                                 @RequestParam Integer seriesId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            Watchlist existingWatchlistItem;
-
-            if (movieId != null) {
-                Optional<Movie> movieOptional = movieRepository.findById(movieId);
-                if (movieOptional.isPresent()) {
-                    Movie movie = movieOptional.get();
-                    existingWatchlistItem = watchlistRepository.findByUsersUserAndMoviesMovie(user, movie);
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono filmu o podanym ID.");
-                }
-            } else if (seriesId != null) {
-                Optional<Series> seriesOptional = seriesRepository.findById(seriesId);
-                if (seriesOptional.isPresent()) {
-                    Series series = seriesOptional.get();
-                    existingWatchlistItem = watchlistRepository.findByUsersUserAndSeriesSeries(user, series);
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono serialu o podanym ID.");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nieprawidłowe parametry wejściowe.");
-            }
-
-            if (existingWatchlistItem != null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Element już znajduje się na liście watchlisty użytkownika.");
-            }
-
-            Watchlist newWatchlistItem = new Watchlist();
-            newWatchlistItem.setUsersUser(user);
-
-            if (movieId != null) {
-                Optional<Movie> movieOptional = movieRepository.findById(movieId);
-                if (movieOptional.isPresent()) {
-                    Movie movie = movieOptional.get();
-                    newWatchlistItem.setMoviesMovie(movie);
-                    watchlistRepository.save(newWatchlistItem);
-                    return ResponseEntity.ok("Film został dodany do watchlisty.");
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono filmu o podanym ID.");
-                }
-            } else if (seriesId != null) {
-                Optional<Series> seriesOptional = seriesRepository.findById(seriesId);
-                if (seriesOptional.isPresent()) {
-                    Series series = seriesOptional.get();
-                    newWatchlistItem.setSeriesSeries(series);
-                    watchlistRepository.save(newWatchlistItem);
-                    return ResponseEntity.ok("Serial został dodany do watchlisty.");
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono serialu o podanym ID.");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nieprawidłowe parametry wejściowe.");
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono użytkownika o podanym ID.");
-        }
-    }
-
-
-    // Przeglądanie watchlisty użytkownika
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Watchlist>> getUserWatchlist(@PathVariable Integer userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            List<Watchlist> userWatchlist = watchlistRepository.findByUsersUser(user);
+        if (!userWatchlist.isEmpty()) {
             return ResponseEntity.ok(userWatchlist);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    // Usuwanie filmu lub serialu z watchlisty użytkownika
-    @DeleteMapping("/remove")
-    public ResponseEntity<String> removeFromWatchlist(@RequestParam Integer userId, @RequestParam Integer watchlistItemId) {
+    @PostMapping("/add")
+    public ResponseEntity<String> addToWatchlist(@RequestParam Integer userId, @RequestParam Integer movieId) {
+        User user = userRepository.findById(userId).orElse(null);
+        Movie movie = movieRepository.findById(movieId).orElse(null);
+
+        if (user == null || movie == null) {
+            return ResponseEntity.badRequest().body("User or movie not found");
+        }
+
+        Watchlist existingWatchlistEntry = watchlistRepository.findByUsersUserAndMoviesMovie(user, movie);
+
+        if (existingWatchlistEntry != null) {
+            return ResponseEntity.badRequest().body("Movie already in the watchlist");
+        }
+
+        Watchlist watchlistEntry = new Watchlist();
+        watchlistEntry.setUsersUser(user);
+        watchlistEntry.setMoviesMovie(movie);
+
+        watchlistRepository.save(watchlistEntry);
+
+        return ResponseEntity.ok("Movie added to watchlist successfully");
+    }
+
+    @Transactional
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> removeFromWatchlist(@RequestParam Integer userId, @RequestParam Integer movieId) {
         Optional<User> userOptional = userRepository.findById(userId);
+        Optional<Movie> movieOptional = movieRepository.findById(movieId);
 
-        if (userOptional.isPresent()) {
+        if (userOptional.isPresent() && movieOptional.isPresent()) {
             User user = userOptional.get();
-            Optional<Watchlist> watchlistItemOptional = watchlistRepository.findById(watchlistItemId);
+            Movie movie = movieOptional.get();
 
-            if (watchlistItemOptional.isPresent()) {
-                Watchlist watchlistItem = watchlistItemOptional.get();
+            watchlistRepository.deleteByUsersUserAndMoviesMovie(user, movie);
 
-                if (!watchlistItem.getUsersUser().equals(user)) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Podany element nie należy do użytkownika.");
-                }
-
-                watchlistRepository.delete(watchlistItem);
-                return ResponseEntity.ok("Element został usunięty z watchlisty.");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono elementu watchlisty o podanym ID.");
-            }
+            return ResponseEntity.ok("Movie removed from watchlist successfully");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono użytkownika o podanym ID.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User or movie not found");
         }
     }
+
 }

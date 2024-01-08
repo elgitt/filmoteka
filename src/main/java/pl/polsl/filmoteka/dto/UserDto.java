@@ -8,6 +8,9 @@ public class UserDto {
         private String username;
         private String password;
 
+    public UserDto() {
+
+    }
     public Integer getId() {
         return id;
     }

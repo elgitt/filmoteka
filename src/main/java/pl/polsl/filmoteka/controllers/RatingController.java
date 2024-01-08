@@ -1,16 +1,19 @@
 package pl.polsl.filmoteka.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import pl.polsl.filmoteka.models.Movie;
 import pl.polsl.filmoteka.models.Rating;
+import pl.polsl.filmoteka.models.User;
 import pl.polsl.filmoteka.repositories.MovieRepository;
 import pl.polsl.filmoteka.repositories.RatingRepository;
-import pl.polsl.filmoteka.repositories.SeriesRepository;
 import pl.polsl.filmoteka.repositories.UserRepository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/rating")
@@ -19,101 +22,140 @@ public class RatingController {
 
     private final RatingRepository ratingRepository;
     private final MovieRepository movieRepository;
-    private final SeriesRepository seriesRepository;
+
+    //private final SeriesRepository seriesRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public RatingController(RatingRepository ratingRepository, MovieRepository movieRepository, SeriesRepository seriesRepository, UserRepository userRepository) {
+    public RatingController(RatingRepository ratingRepository, MovieRepository movieRepository, UserRepository userRepository) {
         this.ratingRepository = ratingRepository;
         this.movieRepository = movieRepository;
-        this.seriesRepository = seriesRepository;
+        //this.seriesRepository = seriesRepository;
         this.userRepository = userRepository;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Rating> getAllRatings (){
         return ratingRepository.findAll();
     }
 
 
-    /*// Dodawanie oceny filmu lub serialu
+//    @GetMapping("/rating/userRating")
+//    public ResponseEntity<Integer> getUserRating(
+//            @RequestParam Integer userId,
+//            @RequestParam Integer movieId
+//    ) {
+//        try {
+//            Optional<Rating> ratingOptional = ratingRepository.findByUsersUserIdAndMoviesMovieMovieId(userId, movieId);
+//
+//            if (ratingOptional.isPresent()) {
+//                Rating rating = ratingOptional.get();
+//                return ResponseEntity.ok(rating.getRating());
+//            } else {
+//                return ResponseEntity.notFound().build();
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
     @PostMapping("/add")
-    public ResponseEntity<String> addRating(@RequestParam Integer userId, @RequestParam Integer movieId,
-                                            @RequestParam Integer seriesId, @RequestParam Integer ratingValue,
-                                            @RequestParam Character isMovie) {
-        if (ratingValue < 1 || ratingValue > 10) {
-            return ResponseEntity.badRequest().body("Ocena musi być w zakresie 1-10.");
-        }
+    public ResponseEntity<String> addOrUpdateRating(
+            @RequestParam Integer userId,
+            @RequestParam Integer movieId,
+            @RequestParam Integer rating
+    ) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            Optional<Movie> movieOptional = movieRepository.findById(movieId);
 
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            Rating existingRating;
+            if (userOptional.isPresent() && movieOptional.isPresent()) {
+                User user = userOptional.get();
+                Movie movie = movieOptional.get();
 
-            if (isMovie == 'Y') {
-                Optional<Movie> movieOptional = movieRepository.findById(movieId);
-                if (movieOptional.isPresent()) {
-                    Movie movie = movieOptional.get();
-                    existingRating = ratingRepository.findByUsersUserAndMoviesMovieid(user, movie);
+                // Sprawdź, czy ocena już istnieje
+                Optional<Rating> existingRatingOptional = ratingRepository.findByUsersUserAndMoviesMovie(user, movie);
+
+                if (existingRatingOptional.isPresent()) {
+                    // Jeśli ocena istnieje, zaktualizuj ją
+                    Rating existingRating = existingRatingOptional.get();
+                    existingRating.setRating(rating);
+                    existingRating.setRatingDate(LocalDate.now());
+                    ratingRepository.save(existingRating);
+                    return ResponseEntity.ok("Ocena zaktualizowana pomyślnie.");
                 } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono filmu o podanym ID.");
-                }
-            } else {
-                Optional<Series> seriesOptional = seriesRepository.findById(seriesId);
-                if (seriesOptional.isPresent()) {
-                    Series series = seriesOptional.get();
-                    existingRating = ratingRepository.findByUsersUserAndSeriesSeriesId(user, series);
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono serialu o podanym ID.");
-                }
-            }
-
-            if (existingRating != null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Użytkownik już ocenił ten film lub serial.");
-            }
-
-            Rating newRating = new Rating();
-            newRating.setRating(ratingValue);
-            newRating.setIsmovie(isMovie);
-            newRating.setUsersUser(user);
-
-            if (isMovie == 'Y') {
-                Optional<Movie> movieOptional = movieRepository.findById(movieId);
-                if (movieOptional.isPresent()) {
-                    Movie movie = movieOptional.get();
+                    // Jeśli ocena nie istnieje, dodaj nową ocenę
+                    Rating newRating = new Rating();
+                    newRating.setUsersUser(user);
                     newRating.setMoviesMovie(movie);
+                    newRating.setRating(rating);
+                    newRating.setRatingDate(LocalDate.now());
+
                     ratingRepository.save(newRating);
-                    return ResponseEntity.ok("Ocena dla filmu została dodana.");
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono filmu o podanym ID.");
+                    return ResponseEntity.ok("Ocena dodana pomyślnie.");
                 }
             } else {
-                Optional<Series> seriesOptional = seriesRepository.findById(seriesId);
-                if (seriesOptional.isPresent()) {
-                    Series series = seriesOptional.get();
-                    newRating.setSeriesSeries(series);
-                    ratingRepository.save(newRating);
-                    return ResponseEntity.ok("Ocena dla serialu została dodana.");
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono serialu o podanym ID.");
-                }
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Nie znaleziono użytkownika lub filmu o podanym identyfikatorze.");
             }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono użytkownika o podanym ID.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił błąd podczas dodawania/aktualizacji oceny.");
         }
     }
 
-    // Przeglądanie ocen użytkownika
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Rating>> getUserRatings(@PathVariable Integer userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            List<Rating> userRatings = ratingRepository.findByUsersUser(user);
-            return ResponseEntity.ok(userRatings);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    @GetMapping("/getByUser")
+    public ResponseEntity<List<Object[]>> getUserRatingsWithMovies(@RequestParam Integer userId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                List<Object[]> userRatingsWithMovies = ratingRepository.findRatingsWithMoviesByUserId(userId);
+                return ResponseEntity.ok(userRatingsWithMovies);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-    }*/
+    }
+
+//    @GetMapping("/check")
+//    public ResponseEntity<Map<String, Object>> checkRating(@RequestParam Integer userId, @RequestParam Integer movieId) {
+//        Optional<Rating> existingRatingOptional = ratingRepository.findByUserIdAndMovieId(userId, movieId);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("exists", existingRatingOptional.isPresent());
+//
+//        if (existingRatingOptional.isPresent()) {
+//            response.put("ratingId", existingRatingOptional.get().getId());
+//        }
+//
+//        return ResponseEntity.ok(response);
+//    }
+
+
+    @PutMapping("/update")
+    public ResponseEntity<String> updateRating(@RequestParam Integer ratingId, @RequestParam Integer updatedRating) {
+        try {
+            Optional<Rating> existingRatingOptional = ratingRepository.findById(ratingId);
+
+            if (existingRatingOptional.isPresent()) {
+                Rating existingRating = existingRatingOptional.get();
+
+                // Aktualizuj tylko pole rating
+                existingRating.setRating(updatedRating);
+
+                // Ustaw datę oceny na bieżącą datę podczas aktualizacji
+                existingRating.setRatingDate(LocalDate.now());
+
+                ratingRepository.save(existingRating);
+                return ResponseEntity.ok("Ocena zaktualizowana pomyślnie.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono oceny o podanym identyfikatorze.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił błąd podczas aktualizacji oceny.");
+        }
+    }
+
 }

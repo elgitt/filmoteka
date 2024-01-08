@@ -2,7 +2,6 @@ package pl.polsl.filmoteka.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,56 +13,46 @@ public class Watchlist {
     @Column(name = "watchlist_id", nullable = false)
     private Integer id;
 
-    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_series_id")
-    @JsonManagedReference  //okej
-    private Series seriesSeries;
+    @JoinColumn(name = "movies_movie_id")
+    @JsonManagedReference
+    private Movie moviesMovie;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "users_user_id")
-    @JsonBackReference //okej
+    @JoinColumn(name = "users_user_id", nullable = false)
+    @JsonBackReference
     private User usersUser;
 
-    @Nullable
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movies_movie_id")
-    @JsonManagedReference //okej
-    private Movie moviesMovie;
+//    @Nullable
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "series_series_id")
+//    @JsonManagedReference  //okej
+//    private Series seriesSeries;
 
-    @Column(name = "movie_series_id")
-    private Integer movieSeriesId;
+//    @NotNull
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "users_user_id")
+//    @JsonBackReference //okej
+//    private User usersUser;
 
-    @Lob
-    @Column(name = "movie_series_type")
-    private String movieSeriesType;
+//    @Nullable
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "movies_movie_id")
+//    @JsonManagedReference //okej
+//    private Movie moviesMovie;
+
+
 
 
     public Watchlist() {
     }
 
-    public Watchlist(Integer id, Series seriesSeries, User usersUser, Movie moviesMovie) {
+    public Watchlist(Integer id,  User usersUser, Movie moviesMovie) {
         this.id = id;
-        this.seriesSeries = seriesSeries;
+       // this.seriesSeries = seriesSeries;
         this.usersUser = usersUser;
         this.moviesMovie = moviesMovie;
-    }
-
-    public Movie getMoviesMovie() {
-        return moviesMovie;
-    }
-
-    public void setMoviesMovie(Movie moviesMovie) {
-        this.moviesMovie = moviesMovie;
-    }
-
-    public User getUsersUser() {
-        return usersUser;
-    }
-
-    public void setUsersUser(User usersUser) {
-        this.usersUser = usersUser;
     }
 
     public Integer getId() {
@@ -75,27 +64,30 @@ public class Watchlist {
     }
 
 
-    public Series getSeriesSeries() {
-        return seriesSeries;
+    public User getUsersUser() {
+        return usersUser;
     }
 
-    public void setSeriesSeries(Series seriesSeries) {
-        this.seriesSeries = seriesSeries;
-    }
-    public String getMovieSeriesType() {
-        return movieSeriesType;
+    public void setUsersUser(User usersUser) {
+        this.usersUser = usersUser;
     }
 
-    public void setMovieSeriesType(String movieSeriesType) {
-        this.movieSeriesType = movieSeriesType;
+    public Movie getMoviesMovie() {
+        return moviesMovie;
     }
 
-    public Integer getMovieSeriesId() {
-        return movieSeriesId;
+    public void setMoviesMovie(Movie moviesMovie) {
+        this.moviesMovie = moviesMovie;
     }
 
-    public void setMovieSeriesId(Integer movieSeriesId) {
-        this.movieSeriesId = movieSeriesId;
-    }
+
+//    public Series getSeriesSeries() {
+//        return seriesSeries;
+//    }
+//
+//    public void setSeriesSeries(Series seriesSeries) {
+//        this.seriesSeries = seriesSeries;
+//    }
+
 
 }

@@ -3,7 +3,6 @@ package pl.polsl.filmoteka.controllers;
 import org.springframework.web.bind.annotation.*;
 import pl.polsl.filmoteka.models.Genre;
 import pl.polsl.filmoteka.models.Movie;
-import pl.polsl.filmoteka.models.Series;
 import pl.polsl.filmoteka.repositories.GenreRepository;
 
 import java.util.List;
@@ -49,9 +48,4 @@ public class GenreController {
         return (genre != null) ? genre.getMovies() : null;
     }
 
-    @GetMapping("/{id}/series")
-    public List<Series> getSeriesByGenreId(@PathVariable Integer id) {
-        Genre genre = genreRepository.findById(id).orElse(null);
-        return (genre != null) ? genre.getSeries() : null;
-    }
 }

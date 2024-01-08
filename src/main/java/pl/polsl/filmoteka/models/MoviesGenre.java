@@ -3,10 +3,10 @@ package pl.polsl.filmoteka.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "movie_genres")
-public class MovieGenre {
+@Table(name = "movies_genres", schema = "mydb")
+public class MoviesGenre {
     @EmbeddedId
-    private MovieGenreId id;
+    private MoviesGenreId id;
 
     @MapsId("moviesMovieId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -18,11 +18,11 @@ public class MovieGenre {
     @JoinColumn(name = "genres_genre_id", nullable = false)
     private Genre genresGenre;
 
-    public MovieGenreId getId() {
+    public MoviesGenreId getId() {
         return id;
     }
 
-    public void setId(MovieGenreId id) {
+    public void setId(MoviesGenreId id) {
         this.id = id;
     }
 

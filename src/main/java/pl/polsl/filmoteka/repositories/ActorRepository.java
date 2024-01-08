@@ -19,7 +19,5 @@ public interface ActorRepository extends JpaRepository<Actor, Integer> {
 
     void deleteById(Integer id);
 
-    List<Actor> findBySeriesId(Integer seriesId);
-
 
 }

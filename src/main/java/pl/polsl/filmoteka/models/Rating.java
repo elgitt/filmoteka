@@ -22,16 +22,14 @@ public class Rating {
     @Column(name = "rating")
     private Integer rating;
 
+//    @Nullable
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "series_series_id")
+//    @JsonManagedReference //okej
+//    private Series seriesSeries;
+
     @Nullable
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_series_id")
-    @JsonManagedReference //okej
-    private Series seriesSeries;
-
-    @Nullable
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "movies_movie_id")
     @JsonManagedReference //okej
     private Movie moviesMovie;
@@ -49,11 +47,11 @@ public class Rating {
     public Rating() {
     }
 
-    public Rating(Integer id, Integer rating, Series seriesSeries, Movie moviesMovie, User usersUser, LocalDate ratingDate) {
+    public Rating(Integer id, Integer rating, Movie moviesMovie, User usersUser, LocalDate ratingDate) {
         this.id = id;
         this.rating = rating;
         this.ratingDate = ratingDate;
-        this.seriesSeries = seriesSeries;
+        //this.seriesSeries = seriesSeries;
         this.moviesMovie = moviesMovie;
         this.usersUser = usersUser;
     }
@@ -75,13 +73,13 @@ public class Rating {
     }
 
 
-    public Series getSeriesSeries() {
-        return seriesSeries;
-    }
-
-    public void setSeriesSeries(Series seriesSeries) {
-        this.seriesSeries = seriesSeries;
-    }
+//    public Series getSeriesSeries() {
+//        return seriesSeries;
+//    }
+//
+//    public void setSeriesSeries(Series seriesSeries) {
+//        this.seriesSeries = seriesSeries;
+//    }
 
     public Movie getMoviesMovie() {
         return moviesMovie;

@@ -30,19 +30,26 @@ public class Actor {
     @Column(name = "nationality", length = 50)
     private String nationality;
 
-
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "movie_cast",
+    @JoinTable(name = "cast",
             joinColumns = @JoinColumn(name = "actors_actor_id"))
-    @JsonBackReference  //okej
+           // inverseJoinColumns = @JoinColumn(name = "movies_movie_id"))
+    @JsonBackReference
     private List<Movie> movies = new ArrayList<>();
 
 
-    @ManyToMany
-    @JoinTable(name = "series_cast",
-            joinColumns = @JoinColumn(name = "actors_actor_id"))
-    @JsonBackReference  //okej
-    private List<Series> series = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "movie_cast",
+//            joinColumns = @JoinColumn(name = "actors_actor_id"))
+//    @JsonBackReference  //okej
+//    private List<Movie> movies = new ArrayList<>();
+
+
+//    @ManyToMany
+//    @JoinTable(name = "series_cast",
+//            joinColumns = @JoinColumn(name = "actors_actor_id"))
+//    @JsonBackReference  //okej
+//    private List<Series> series = new ArrayList<>();
 
 
     public Actor() {
@@ -61,13 +68,26 @@ public class Actor {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Actor actor)) return false;
-        return Objects.equals(getId(), actor.getId()) && Objects.equals(getName(), actor.getName()) && Objects.equals(getSurname(), actor.getSurname()) && Objects.equals(getGender(), actor.getGender()) && Objects.equals(getNationality(), actor.getNationality()) && Objects.equals(getMovies(), actor.getMovies()) && Objects.equals(getSeries(), actor.getSeries());
+        return Objects.equals(getId(), actor.getId()) && Objects.equals(getName(), actor.getName()) && Objects.equals(getSurname(), actor.getSurname()) && Objects.equals(getGender(), actor.getGender()) && Objects.equals(getNationality(), actor.getNationality()) && Objects.equals(getMovies(), actor.getMovies());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getSurname(), getGender(), getNationality(), getMovies(), getSeries());
+        return Objects.hash(getId(), getName(), getSurname(), getGender(), getNationality(), getMovies());
     }
+
+
+    //    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Actor actor)) return false;
+//        return Objects.equals(getId(), actor.getId()) && Objects.equals(getName(), actor.getName()) && Objects.equals(getSurname(), actor.getSurname()) && Objects.equals(getGender(), actor.getGender()) && Objects.equals(getNationality(), actor.getNationality()) && Objects.equals(getMovies(), actor.getMovies()) && Objects.equals(getSeries(), actor.getSeries());
+//    }
+
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(getId(), getName(), getSurname(), getGender(), getNationality(), getMovies(), getSeries());
+//    }
 
     public Integer getId() {
         return id;
@@ -113,12 +133,12 @@ public class Actor {
 
     public void setMovies(List<Movie> movies) { this.movies = movies; }
 
-    public List<Series> getSeries() {
-        return series;
-    }
-
-    public void setSeries(List<Series> series) {
-        this.series = series;
-    }
+//    public List<Series> getSeries() {
+//        return series;
+//    }
+//
+//    public void setSeries(List<Series> series) {
+//        this.series = series;
+//    }
 
 }

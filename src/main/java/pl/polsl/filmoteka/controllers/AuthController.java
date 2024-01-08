@@ -74,7 +74,15 @@ public class AuthController {
             User existingUser = userRepository.findByUsername(username);
 
             if (existingUser != null && passwordEncoder.matches(password, existingUser.getPassword())) {
-                return new ResponseEntity<>(existingUser, HttpStatus.OK);
+                // Tworzenie obiektu UserDto na podstawie User
+                UserDto userDto = new UserDto() ;
+                userDto.setId(existingUser.getId());
+                userDto.setName(existingUser.getName());
+                userDto.setSurname(existingUser.getSurname());
+                userDto.setUsername(existingUser.getUsername());
+                userDto.setPassword(existingUser.getPassword());
+
+                return new ResponseEntity<>(userDto, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
             }
