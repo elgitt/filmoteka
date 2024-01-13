@@ -20,4 +20,32 @@ public interface RatingRepository extends JpaRepository<Rating, Integer> {
 
     Optional<Rating> findByUsersUserAndMoviesMovie(User user, Movie movie);
 
+    @Query("SELECT g2.genre, AVG(r.rating) as avgRating " +
+            "FROM Rating r " +
+            "LEFT JOIN MoviesGenre mg ON mg.moviesMovie.id = r.moviesMovie.id " +
+            "LEFT JOIN Genre g2 ON g2.id = mg.genresGenre.id " +
+            "WHERE r.usersUser.id = :userId " +
+            "GROUP BY g2.genre " +
+            "HAVING AVG(r.rating) >= 7.5 " +
+            "ORDER BY AVG(r.rating) DESC " +
+             "LIMIT 3")
+    List<Object[]> getTopGenresForUser(@Param("userId") Integer userId);
+
+    @Query("SELECT m.posterLink, m.id, m.description, m.director, m.duration, m.type, m.seasons, m.releaseYear, m.title, g2.genre " +
+            "FROM Movie m " +
+            "JOIN MoviesGenre mg ON m.id = mg.moviesMovie.id " +
+            "JOIN Genre g2 ON g2.id = mg.genresGenre.id " +
+            "WHERE g2.genre IN (" +
+            "    SELECT g3.genre " +
+            "    FROM Rating r " +
+            "    LEFT JOIN MoviesGenre mg2 ON mg2.moviesMovie.id = r.moviesMovie.id " +
+            "    LEFT JOIN Genre g3 ON g3.id = mg2.genresGenre.id " +
+            "    WHERE r.usersUser.id = :userId " +
+            "    GROUP BY g3.genre " +
+            "    HAVING AVG(r.rating) >= 7.5" +
+            ")")
+    List<Object[]> getMoviesForTopGenres(@Param("userId") Integer userId);
+
 }
+
+

@@ -24,27 +24,6 @@ public class Watchlist {
     @JsonBackReference
     private User usersUser;
 
-//    @Nullable
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "series_series_id")
-//    @JsonManagedReference  //okej
-//    private Series seriesSeries;
-
-//    @NotNull
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "users_user_id")
-//    @JsonBackReference //okej
-//    private User usersUser;
-
-//    @Nullable
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "movies_movie_id")
-//    @JsonManagedReference //okej
-//    private Movie moviesMovie;
-
-
-
-
     public Watchlist() {
     }
 
@@ -79,15 +58,6 @@ public class Watchlist {
     public void setMoviesMovie(Movie moviesMovie) {
         this.moviesMovie = moviesMovie;
     }
-
-
-//    public Series getSeriesSeries() {
-//        return seriesSeries;
-//    }
-//
-//    public void setSeriesSeries(Series seriesSeries) {
-//        this.seriesSeries = seriesSeries;
-//    }
 
 
 }

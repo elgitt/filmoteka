@@ -17,20 +17,16 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/rating")
-
 public class RatingController {
 
     private final RatingRepository ratingRepository;
     private final MovieRepository movieRepository;
-
-    //private final SeriesRepository seriesRepository;
     private final UserRepository userRepository;
 
     @Autowired
     public RatingController(RatingRepository ratingRepository, MovieRepository movieRepository, UserRepository userRepository) {
         this.ratingRepository = ratingRepository;
         this.movieRepository = movieRepository;
-        //this.seriesRepository = seriesRepository;
         this.userRepository = userRepository;
     }
 
@@ -38,26 +34,6 @@ public class RatingController {
     public List<Rating> getAllRatings (){
         return ratingRepository.findAll();
     }
-
-
-//    @GetMapping("/rating/userRating")
-//    public ResponseEntity<Integer> getUserRating(
-//            @RequestParam Integer userId,
-//            @RequestParam Integer movieId
-//    ) {
-//        try {
-//            Optional<Rating> ratingOptional = ratingRepository.findByUsersUserIdAndMoviesMovieMovieId(userId, movieId);
-//
-//            if (ratingOptional.isPresent()) {
-//                Rating rating = ratingOptional.get();
-//                return ResponseEntity.ok(rating.getRating());
-//            } else {
-//                return ResponseEntity.notFound().build();
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
 
     @PostMapping("/add")
     public ResponseEntity<String> addOrUpdateRating(
@@ -73,18 +49,15 @@ public class RatingController {
                 User user = userOptional.get();
                 Movie movie = movieOptional.get();
 
-                // Sprawdź, czy ocena już istnieje
                 Optional<Rating> existingRatingOptional = ratingRepository.findByUsersUserAndMoviesMovie(user, movie);
 
                 if (existingRatingOptional.isPresent()) {
-                    // Jeśli ocena istnieje, zaktualizuj ją
                     Rating existingRating = existingRatingOptional.get();
                     existingRating.setRating(rating);
                     existingRating.setRatingDate(LocalDate.now());
                     ratingRepository.save(existingRating);
                     return ResponseEntity.ok("Ocena zaktualizowana pomyślnie.");
                 } else {
-                    // Jeśli ocena nie istnieje, dodaj nową ocenę
                     Rating newRating = new Rating();
                     newRating.setUsersUser(user);
                     newRating.setMoviesMovie(movie);
@@ -119,21 +92,6 @@ public class RatingController {
         }
     }
 
-//    @GetMapping("/check")
-//    public ResponseEntity<Map<String, Object>> checkRating(@RequestParam Integer userId, @RequestParam Integer movieId) {
-//        Optional<Rating> existingRatingOptional = ratingRepository.findByUserIdAndMovieId(userId, movieId);
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("exists", existingRatingOptional.isPresent());
-//
-//        if (existingRatingOptional.isPresent()) {
-//            response.put("ratingId", existingRatingOptional.get().getId());
-//        }
-//
-//        return ResponseEntity.ok(response);
-//    }
-
-
     @PutMapping("/update")
     public ResponseEntity<String> updateRating(@RequestParam Integer ratingId, @RequestParam Integer updatedRating) {
         try {
@@ -142,10 +100,8 @@ public class RatingController {
             if (existingRatingOptional.isPresent()) {
                 Rating existingRating = existingRatingOptional.get();
 
-                // Aktualizuj tylko pole rating
                 existingRating.setRating(updatedRating);
 
-                // Ustaw datę oceny na bieżącą datę podczas aktualizacji
                 existingRating.setRatingDate(LocalDate.now());
 
                 ratingRepository.save(existingRating);
@@ -156,6 +112,16 @@ public class RatingController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił błąd podczas aktualizacji oceny.");
         }
+    }
+
+    @GetMapping("/topGenresForUser")
+    public List<Object[]> getTopGenresForUser(@RequestParam Integer userId) {
+        return ratingRepository.getTopGenresForUser(userId);
+    }
+
+    @GetMapping("/moviesForTopGenres")
+    public List<Object[]> getMoviesForTopGenres(@RequestParam Integer userId) {
+        return ratingRepository.getMoviesForTopGenres(userId);
     }
 
 }

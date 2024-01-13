@@ -22,12 +22,6 @@ public class Rating {
     @Column(name = "rating")
     private Integer rating;
 
-//    @Nullable
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "series_series_id")
-//    @JsonManagedReference //okej
-//    private Series seriesSeries;
-
     @Nullable
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "movies_movie_id")
@@ -72,15 +66,6 @@ public class Rating {
         this.rating = rating;
     }
 
-
-//    public Series getSeriesSeries() {
-//        return seriesSeries;
-//    }
-//
-//    public void setSeriesSeries(Series seriesSeries) {
-//        this.seriesSeries = seriesSeries;
-//    }
-
     public Movie getMoviesMovie() {
         return moviesMovie;
     }
@@ -96,7 +81,6 @@ public class Rating {
     public void setUsersUser(User usersUser) {
         this.usersUser = usersUser;
     }
-
 
     public LocalDate getRatingDate() {
         return ratingDate;

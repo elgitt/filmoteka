@@ -22,14 +22,13 @@ public class WatchlistController {
 
     private final WatchlistRepository watchlistRepository;
     private final MovieRepository movieRepository;
-   // private final SeriesRepository seriesRepository;
     private final UserRepository userRepository;
 
     @Autowired
     public WatchlistController(WatchlistRepository watchlistRepository, MovieRepository movieRepository, UserRepository userRepository) {
         this.watchlistRepository = watchlistRepository;
         this.movieRepository = movieRepository;
-        //this.seriesRepository = seriesRepository;
+
         this.userRepository = userRepository;
     }
 
@@ -69,7 +68,6 @@ public class WatchlistController {
         watchlistEntry.setMoviesMovie(movie);
 
         watchlistRepository.save(watchlistEntry);
-
         return ResponseEntity.ok("Movie added to watchlist successfully");
     }
 

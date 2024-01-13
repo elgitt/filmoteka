@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.polsl.filmoteka.dto.UserDto;
 import pl.polsl.filmoteka.models.User;
 import pl.polsl.filmoteka.repositories.UserRepository;
@@ -74,7 +71,6 @@ public class AuthController {
             User existingUser = userRepository.findByUsername(username);
 
             if (existingUser != null && passwordEncoder.matches(password, existingUser.getPassword())) {
-                // Tworzenie obiektu UserDto na podstawie User
                 UserDto userDto = new UserDto() ;
                 userDto.setId(existingUser.getId());
                 userDto.setName(existingUser.getName());
@@ -91,4 +87,42 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
+
+    @PutMapping("/editProfile")
+    public ResponseEntity<String> editProfile(@Valid @RequestBody UserDto updatedUser, BindingResult result) {
+        try {
+            User existingUser = userRepository.findById(updatedUser.getId()).orElse(null);
+
+            if (existingUser == null) {
+                return ResponseEntity.badRequest().body("User not found");
+            }
+
+
+            User existingUserByUsername = userService.findUserByUsername(updatedUser.getUsername());
+            if (existingUserByUsername != null && !existingUserByUsername.getId().equals(updatedUser.getId())) {
+                result.rejectValue("username", null, "This username is already taken");
+            }
+
+
+            if (result.hasErrors()) {
+                return ResponseEntity.badRequest().body("Profile update failed. Please check your details and try again.");
+            }
+
+            existingUser.setName(updatedUser.getName());
+            existingUser.setSurname(updatedUser.getSurname());
+            existingUser.setUsername(updatedUser.getUsername());
+
+            String newPassword = updatedUser.getPassword();
+            if (newPassword != null && !newPassword.isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(newPassword));
+            }
+
+            userRepository.save(existingUser);
+
+            return ResponseEntity.ok("Profile updated successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during profile update");
+        }
+    }
+
 }

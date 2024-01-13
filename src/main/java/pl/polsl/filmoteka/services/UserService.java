@@ -49,18 +49,5 @@ public class UserService {
 
     }
 
-//    private UserDto mapToUserDto(User user){
-//        UserDto userDto = new UserDto();
-//        userDto.setId(user.getId());
-//        userDto.setName(user.getName());
-//        userDto.setSurname(user.getSurname());
-//        return userDto;
-//    }
 
-//    public List<UserDto> findAllUsers() {
-//        List<User> users = userRepository.findAll();
-//        return users.stream()
-//                .map(this::mapToUserDto)
-//                .collect(Collectors.toList());
-//    }
 }

@@ -65,14 +65,6 @@ public class User {
         this.role = role;
     }
 
-//    public List<Watchlist> getWatchlists() {
-//        return watchlists;
-//    }
-//
-//    public void setWatchlists(List<Watchlist> watchlists) {
-//        this.watchlists = watchlists;
-//    }
-
     public List<Watchlist> getWatchlists() {
         return watchlists;
     }
@@ -136,14 +128,5 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
-
-    public List<Genre> getGenres() {
-        return genres;
-    }
-
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
-    }
-
 
 }

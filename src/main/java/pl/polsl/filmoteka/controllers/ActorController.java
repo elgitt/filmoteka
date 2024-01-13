@@ -68,15 +68,4 @@ public class ActorController {
         return actor != null ? actor.getMovies() : null;
     }
 
-//    @GetMapping("/{id}/series")
-//    public List<Series> getTVShowsByActorId(@PathVariable Integer id) {
-//        Actor actor = actorRepository.findById(id).orElse(null);
-//        return actor != null ? actor.getSeries() : null;
-//    }
-
-//    @GetMapping("/series/{seriesId}")
-//    public List<Actor> getActorsBySeriesId(@PathVariable Integer seriesId) {
-//        return actorRepository.findBySeriesId(seriesId);
-//    }
-
 }
